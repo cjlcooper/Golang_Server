@@ -7,12 +7,20 @@ import (
 	"encoding/json"
 )
 
+//type struct
+type ResponseDict struct {
+	Name    string
+	ID      string
+	Code    string
+}
+
 func main() {
-	http.HandleFunc("/myHandle",myHandle)
+	http.HandleFunc("/test",test)
+	http.HandleFunc("/getJson",getJson)
 	http.ListenAndServe(":8080",nil)
 }
 
-func myHandle(w http.ResponseWriter,r *http.Request) {
+func test(w http.ResponseWriter,r *http.Request) {
 	defer r.Body.Close()
 	var dict map[string]interface{}
 	con, _ := ioutil.ReadAll(r.Body)
@@ -20,5 +28,17 @@ func myHandle(w http.ResponseWriter,r *http.Request) {
 	fmt.Println("Request->")
 	fmt.Println(dict)
 	fmt.Fprintln(w, dict)
-	//w.Write("ok")
+}
+
+func getJson(w http.ResponseWriter,r *http.Request) {
+	defer r.Body.Close()
+	var dict map[string]interface{}
+	con, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(con,&dict)
+	var responseDict = ResponseDict{}
+	responseDict.Name = "Hello Client"
+	responseDict.ID = "001"
+	responseDict.Code = "0"
+	var data,_ = json.Marshal(responseDict)
+	fmt.Fprintln(w, string(data))
 }
